@@ -67,3 +67,67 @@ class ProgrammingTutor:
 
         self.current_challenge = "string_armstrong"
         self.challenge_code = self.challenges[self.current_challenge]
+
+    def all_resolved(self):
+        for line_no, corrected_line in self.corrected_lines[self.current_challenge].items():
+            if self.challenge_code[line_no - 1].strip() != corrected_line.strip():
+                return False
+        return True
+
+    def next_challenge(self):
+        if self.current_challenge == "string_armstrong":
+            self.current_challenge = "sort_search"
+            self.challenge_code = self.challenges[self.current_challenge]
+            print("\nNew Challenge:")
+            for line_no, line in enumerate(self.challenge_code, 1):
+                print(f"{line_no}. {line}")
+        else:
+            print("Congratulations! You've resolved all the conflicts in all challenges.")
+            return False  # All challenges have been completed
+        return True  # Still have challenges remaining
+
+    def start(self):
+        print("Welcome to AI Programming Tutor!")
+        for line_no, line in enumerate(self.challenge_code, 1):
+            print(f"{line_no}. {line}")
+
+        while True:
+            action = input("\nChoose an action (hint/edit/quit/next): ").strip().lower()
+            if action == 'quit':
+                print("\nThanks for using AI Programming Tutor!")
+                break
+            elif action == 'next':
+                if self.all_resolved():
+                    if not self.next_challenge():
+                        break
+            elif action == 'edit':
+                try:
+                    line_no = int(input("Enter line number to edit: "))
+                    if 1 <= line_no <= len(self.challenge_code):
+                        current_line = self.challenge_code[line_no - 1]
+                        print(f"Current Line {line_no}: {current_line}")
+                        new_line = input("Enter the corrected line: ").strip()
+
+                        if line_no in self.corrected_lines[self.current_challenge] and new_line.strip() == \
+                            self.corrected_lines[self.current_challenge][line_no].strip():
+                            print("Correct! Well done!")
+                            self.challenge_code[line_no - 1] = new_line
+
+                            if self.all_resolved():
+                                print("Congratulations! You've resolved all the conflicts in the program.")
+                                if not self.next_challenge():
+                                    break
+
+                        else:
+                            print("That's not correct. Try again.")
+                    else:
+                        print("Invalid line number. Please enter a valid line number.")
+                except ValueError:
+                    print("Invalid input. Please enter the line number as an integer.")
+            elif action == 'hint':
+                for line_no, hint in self.hints[self.current_challenge].items():
+                    if self.challenge_code[line_no - 1] != self.corrected_lines[self.current_challenge].get(line_no):
+                        print(f"Hint for Line {line_no}: {hint}")
+                        break
+            else:
+                print("Invalid action. Please choose hint/edit/quit/next.")
